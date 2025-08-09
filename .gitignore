@@ -1,0 +1,15 @@
+# Node modules
+icontract_frontend/node_modules/
+node_modules/
+
+# Build output
+icontract_frontend/dist/
+dist/
+
+# Environment files
+icontract_frontend/.env
+*.env
+
+# Database
+backend/database.db
+backend/__pycache__

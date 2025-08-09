@@ -1,0 +1,6 @@
+fastapi[standard]
+pydantic
+python-dotenv
+sqlmodel
+openai==0.28
+py-solc-x
