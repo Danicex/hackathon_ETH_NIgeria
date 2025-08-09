@@ -14,6 +14,8 @@ Once built, users can **deploy their contracts directly to the blockchain** (tes
 - **Wallet Integration** – Powered by [Wagmi](https://wagmi.sh/) and [ethers.js](https://docs.ethers.org/).
 - **Customizable Templates** – Start from scratch or use prebuilt contract templates.
 - **Live Preview** – See the generated Solidity code update in real time.
+- **AI code assistant** – use ai to vibe code while building with i contract.
+- **Team share** - project can be shared between parties (teams)
 
 ---
 
