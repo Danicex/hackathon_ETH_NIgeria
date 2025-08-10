@@ -4,7 +4,11 @@ import { ChevronUp, ChevronDown } from 'lucide-react'
 
 export default function Toolbar() {
   const [open, setOpen] = useState(false)
-  const projectInfo = JSON.parse(localStorage.getItem('project_info'))
+  const projectInfo = JSON.parse(localStorage.getItem('project_info')) || {
+    name: 'no project',
+    description: '',
+    created_at: ''
+  }
   return (
     <div className='px-4 pt-2'>
       <div className='flex justify-between items-start'>

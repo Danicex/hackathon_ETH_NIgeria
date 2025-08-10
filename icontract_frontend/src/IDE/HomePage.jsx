@@ -55,7 +55,9 @@ contract SimpleStorage {
   // Load project content from IndexedDB
   useEffect(() => {
     const loadProject = async () => {
-      if (current_project) {
+    if (!current_project) return;
+
+    if (current_project) {
         setActiveProject(true);
         const data = await getContent(current_project);
         if (data) {
