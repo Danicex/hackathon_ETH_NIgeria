@@ -1,10 +1,25 @@
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
-import { sepolia, polygonMumbai, eduChainTestnet } from 'wagmi/chains';
+import { defineChain } from 'viem'
+
+const filecoinCalibration = defineChain({
+  id: 314159, // Calibration testnet chain ID (decimal)
+  name: 'Filecoin - Calibration Testnet',
+  network: 'filecoin-calibration',
+  nativeCurrency: { name: 'Filecoin', symbol: 'FIL', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://api.calibration.node.glif.io/rpc/v1'] },
+    public: { http: ['https://api.calibration.node.glif.io/rpc/v1'] }
+  },
+  blockExplorers: {
+    default: { name: 'Filfox', url: 'https://calibration.filfox.info/en' }
+  },
+});
+
 const config = createConfig(
   getDefaultConfig({
-    chains: [sepolia, polygonMumbai, eduChainTestnet], // Ensure this is correctly defined
+    chains: [filecoinCalibration], // Ensure this is correctly defined
     walletConnectProjectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID, // Ensure it's set in .env
     appName: "My Web3 App",
     appDescription: "A decentralized application using EduChain Testnet.",

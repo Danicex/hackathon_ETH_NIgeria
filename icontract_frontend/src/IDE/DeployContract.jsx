@@ -3,7 +3,7 @@ import axios from "axios";
 import { ethers } from 'ethers';
 import { useAccount, useWalletClient } from 'wagmi';
 import { useChainId } from 'wagmi';
-import { mainnet, sepolia, polygonMumbai } from 'wagmi/chains';
+import { filecoinCalibration} from '../Chainconfig';
 
 export function useContractDeployment() {
   const { api_endpoint } = useMyContext();
@@ -13,9 +13,9 @@ export function useContractDeployment() {
 
   async function cleanCode(code) {
     try {
-      if (!code || typeof code !== 'string') {
+     /* if (!code || typeof code !== 'string') {
         throw new Error("Invalid Solidity code");
-      }
+      }*/
 
       const response = await axios.post(`${api_endpoint}/compile_code`, { code });
       
@@ -41,7 +41,7 @@ export function useContractDeployment() {
         throw new Error("No connected account");
       }
 
-      const currentChain = [mainnet, sepolia, polygonMumbai].find(chain => chain.id === chainId);
+      const currentChain = [filecoinCalibration].find(chain => chain.id === chainId);
       const networkName = currentChain?.name || 'unknown';
 
       console.log(`Deploying to network: ${networkName} (ID: ${chainId})`);
@@ -100,17 +100,9 @@ export function useContractDeployment() {
 
   // Helper function to generate explorer links
   function getExplorerLink(chainId, txHash) {
-    const explorers = {
-      1: `https://etherscan.io/tx/${txHash}`,              // Ethereum Mainnet
-      5: `https://goerli.etherscan.io/tx/${txHash}`,       // Goerli
-      11155111: `https://sepolia.etherscan.io/tx/${txHash}`, // Sepolia
-      137: `https://polygonscan.com/tx/${txHash}`,         // Polygon Mainnet
-      80001: `https://mumbai.polygonscan.com/tx/${txHash}`,  // Mumbai
-      43114: `https://snowtrace.io/tx/${txHash}`,          // Avalanche Mainnet
-      43113: `https://testnet.snowtrace.io/tx/${txHash}`,    // Fuji
-      56: `https://bscscan.com/tx/${txHash}`,              // BSC Mainnet
-      97: `https://testnet.bscscan.com/tx/${txHash}`,        // BSC Testnet
-    };
+   const explorers = {
+  314159: `https://calibration.filfox.info/en/tx/${txHash}`,
+};
     return explorers[chainId] || `https://etherscan.io/tx/${txHash}`;
   }
 

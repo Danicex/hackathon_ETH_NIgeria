@@ -8,7 +8,7 @@ import CreatePage from "./IDE/CreatePage"
 import SideBar from "./IDE/SideBar"
 import AboutPage from "./Landingpage/AboutPage"
 import PricingPage from "./Landingpage/PricingPagge"
-
+import CodeAssistant from "./IDE/ChatBot"
 
 function App() {
 
@@ -16,6 +16,7 @@ function App() {
     <AppDataProvider>
     <Routes>
     <Route path="/" element={ <MainPage/> } />
+    <Route path="/code" element={ <CodeAssistant/> } />
     <Route path="/IDE" element={ <HomePage/> } />
     <Route path="/create" element={ <CreatePage/> } />
     <Route path="/test" element={ <SideBar/> } />

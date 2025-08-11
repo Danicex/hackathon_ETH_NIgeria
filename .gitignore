@@ -13,3 +13,5 @@ icontract_frontend/.env
 # Database
 backend/database.db
 backend/__pycache__
+
+myenv

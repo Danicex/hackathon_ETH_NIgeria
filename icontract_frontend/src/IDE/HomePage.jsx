@@ -3,7 +3,7 @@ import soliditySyntax from './Syntax'
 import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Layout, Settings, PanelLeft, CircleX, Bot, Sparkles, Plus, CodeXml, FileX2 } from "lucide-react"
+import { Layout, Settings, PanelLeft, CircleX, Bot, Sparkles, Plus, CodeXml, FileX2, MessageSquareCode, X } from "lucide-react"
 import Preview from "./Preview"
 import { motion } from "framer-motion"
 import ChatBot from './ChatBot'
@@ -13,6 +13,7 @@ import Toolbar from './Toolbar'
 import { saveContent, getContent, AutoSave } from './SaveDoc'
 import { useMyContext } from '@/Context/AppContext'
 import { useContractDeployment } from './DeployContract'
+import CodeAssistant from './ChatBot'
 
 export default function HomePage() {
   const [openNew, setOpenNew] = useState(false)
@@ -23,21 +24,26 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState("components")
   const [openPreview, setOpenPreview] = useState(false);
   const [openAi, setOpenAi] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
+
   const [code, setCode] = useState(`
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 contract SimpleStorage {
-    uint storedData;
+    string public message;
 
-    function set(uint x) public {
-        storedData = x;
+    // Set an initial message
+    constructor() {
+        message = "Hello Filecoin!";
     }
 
-    function get() public view returns (uint) {
-        return storedData;
+    // Update the message
+    function setMessage(string memory newMessage) public {
+        message = newMessage;
     }
 }
+
   `);
   const [targetItems, setTargetItems] = useState([])
   const [params, setParams] = useState({});
@@ -55,13 +61,13 @@ contract SimpleStorage {
   // Load project content from IndexedDB
   useEffect(() => {
     const loadProject = async () => {
-    if (!current_project) return;
+      if (!current_project) return;
 
-    if (current_project) {
+      if (current_project) {
         setActiveProject(true);
         const data = await getContent(current_project);
         if (data) {
-          setCode(data.text);
+          setCode();
         }
       }
     };
@@ -148,7 +154,7 @@ contract SimpleStorage {
     );
   };
 
-  
+
   const onDragEnd = (id, y_value) => {
     if (!draggingItem) return;
 
@@ -181,19 +187,19 @@ contract SimpleStorage {
     );
   };
 
- const handleParamChange = (syntaxId, paramName, newValue) => {
-  // Update the parameter value in your state
-  setTargetItems(prev => prev.map(item => {
-    if (item.syntax_id === syntaxId) {
-      return {
-        ...item,
-        syntax: item.syntax.replace(`$${paramName}$`, `$${newValue}$`)
-      };
-    }
-    return item;
-  }));
-  console.log(targetItems)
-};
+  const handleParamChange = (syntaxId, paramName, newValue) => {
+    // Update the parameter value in your state
+    setTargetItems(prev => prev.map(item => {
+      if (item.syntax_id === syntaxId) {
+        return {
+          ...item,
+          syntax: item.syntax.replace(`$${paramName}$`, `$${newValue}$`)
+        };
+      }
+      return item;
+    }));
+    console.log(targetItems)
+  };
 
   const removeCodeBlock = (id) => {
     const x = targetItems.find(item => item.syntax_id === id);
@@ -212,9 +218,11 @@ contract SimpleStorage {
   const handleDeploy = async () => {
     setIsLoading(true)
     setError('')
+    console.log(code)
     try {
       const { contractAddress, result } = await deployContract(code)
       setDeployedAddress(contractAddress)
+    
       console.log("Deployment successful:", result);
     } catch (err) {
       setError(err.message)
@@ -230,8 +238,8 @@ contract SimpleStorage {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-black text-white">
       {/* Header */}
+      <p>{code}</p>
       <div>
-
         {deployedAddress && (
           <div>
             <h3>Contract deployed successfully!</h3>
@@ -239,6 +247,18 @@ contract SimpleStorage {
           </div>
         )}
 
+        <Button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-20 ${isOpen ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          size="sm"
+        >
+          {isOpen ? <X className="h-6 w-6" /> : <MessageSquareCode className="h-6 w-6" />}
+        </Button>
+
+        {isOpen && (
+          <CodeAssistant isOpen={isOpen}  setIsOpen={setIsOpen}/>
+        )}
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
       </div>
 

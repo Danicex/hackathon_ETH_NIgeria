@@ -1,73 +1,183 @@
 "use client"
 
-import { useState } from "react"
-import { Bot, Send, X } from "lucide-react"
-import { useMyContext } from "@/Context/AppContext"
+import { useState, useRef, useEffect } from "react"
+import axios from "axios"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { MessageSquareCode, Send, X, Bot, User, Loader2 } from "lucide-react"
 
-export default function AIChatAssistant({contract_code, setCloseX}) {
-  const {api_endpoint} =  useMyContext()
-  const [message, setMessage] = useState("")
-  const [chatStarted, setChatStarted] = useState(false)
+export default function CodeAssistant({ code = "" , setIsOpen, isOpen}) {
+  const [messages, setMessages] = useState([])
+  const [prompt, setPrompt] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef(null)
+  const textareaRef = useRef(null)
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      setChatStarted(true)
-      setMessage("")
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  useEffect(() => {
+    if (isOpen && textareaRef.current) {
+      textareaRef.current.focus()
     }
-    //use hugginge face model to pass the contract code and te prompt
-    const formdata ={
-      code: contract_code,
-      prompt: message
-    } 
-    axios.post(`${api_endpoint}/chat`, formdata).then(res=>{
-      setResponse(res.data)
-    }).catch(err=>console.log(err))
+  }, [isOpen])
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!prompt.trim()) return
+
+    const userMessage = {
+      id: Date.now().toString(),
+      role: "user",
+      content: prompt,
+      timestamp: new Date(),
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+    setIsLoading(true)
+
+    try {
+      const { data } = await axios.post("/api/code-assistant", {
+        prompt: prompt.trim(),
+        code: code?.trim?.() || "",
+      })
+
+      const assistantMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: data.response,
+        timestamp: new Date(),
+      }
+
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      console.error("Error calling AI assistant:", error)
+
+      const errorMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Sorry, I encountered an error while processing your request. Please try again.",
+        timestamp: new Date(),
+      }
+
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+      setPrompt("")
+    }
   }
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
-      handleSendMessage()
+      handleSubmit(e)
     }
   }
 
-
   return (
-    <div className="w-[20%] h-screen overflow-scroll bg-[#0f1521] text-gray-200 relative">
-      {/* Header */}
-      <X onClick={()=>setCloseX(true)}/>
-      <header className="pt-4 pb-6 text-center">
-        <h1 className="text-2xl font-bold text-purple-500">AI Assistant</h1>
-        <p className="mt-2 text-gray-400 ">Your intelligent conversation partner</p>
-      </header>
+    <>
 
-      {/* Chat Area */}
-      <main className="">
-        {!chatStarted && (
-          <p className="text-gray-400 text-center pt-20 capitalize">ask ai to assist</p>
-        )}
-      </main>
+      {/* Chatbot Popup */}
+        <div className="fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[500px] bg-gray-800 rounded-lg shadow-2xl border border-slate-200 flex flex-col z-40">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-slate-200">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <Bot className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">AI Code Assistant</h3>
+                <p className="text-xs text-slate-500">Ask me about your code</p>
+              </div>
+            </div>
+          </div>
 
-      {/* Message Input */}
-      <div className="absolute bottom-[10%] w-full">
-        <div className="relative max-w-3xl mx-auto">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message..."
-            className="w-full bg-[#1a1a1a] border border-gray-700 rounded-full py-3 pl-4 pr-12 text-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500"
-          />
-          <button
-            onClick={handleSendMessage}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-700 hover:bg-gray-600 rounded-full p-2 transition-colors"
-          >
-            <Send className="w-4 h-4 text-gray-300" />
-          </button>
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.length === 0 && (
+              <div className="text-center text-slate-500 py-8">
+                <Bot className="h-8 w-8 mx-auto mb-2 text-slate-400" />
+                <p className="text-sm">Hi! I can see your current code and help you with any questions.</p>
+              </div>
+            )}
+
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex gap-2 ${message.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div className={`flex gap-2 max-w-[85%] ${message.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                  <div
+                    className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                      message.role === "user" ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-600"
+                    }`}
+                  >
+                    {message.role === "user" ? <User className="h-3 w-3" /> : <Bot className="h-3 w-3" />}
+                  </div>
+                  <div
+                    className={`p-3 rounded-lg text-sm ${
+                      message.role === "user"
+                        ? "bg-blue-600 text-white rounded-br-sm"
+                        : "bg-slate-100 text-slate-800 rounded-bl-sm"
+                    }`}
+                  >
+                    <pre className="whitespace-pre-wrap font-sans">{message.content}</pre>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {isLoading && (
+              <div className="flex gap-2 justify-start">
+                <div className="flex gap-2 max-w-[85%]">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-xs">
+                    <Bot className="h-3 w-3" />
+                  </div>
+                  <div className="bg-slate-100 text-slate-800 p-3 rounded-lg rounded-bl-sm text-sm">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <span>Analyzing your code...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className="p-4 border-t border-slate-200">
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <Textarea
+                ref={textareaRef}
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask me about your code..."
+                disabled={isLoading}
+                className="w-full resize-none text-sm"
+                rows={2}
+              />
+              <div className="flex justify-between items-center">
+                <p className="text-xs text-slate-500">Press Enter to send, Shift+Enter for new line</p>
+                <Button
+                  type="submit"
+                  disabled={!prompt.trim() || isLoading}
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Send className="h-3 w-3" />}
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    </div>
+    </>
   )
 }
