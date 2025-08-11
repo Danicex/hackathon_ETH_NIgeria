@@ -10,7 +10,7 @@ Once built, users can **deploy their contracts directly to the blockchain** (tes
 - **Visual Contract Builder** – Design contracts by dragging and dropping logic blocks.
 - **Solidity Code Generation** – Automatically generates clean, production-ready Solidity code.
 - **One-Click Deployment** – Connect your wallet and deploy directly from the browser.
-- **Testnet Support** – Deploy to Ethereum Sepolia, Polygon Mumbai, and other EVM testnets.
+- **Testnet Support** – file coin testnets (FVM).
 - **Wallet Integration** – Powered by [Wagmi](https://wagmi.sh/) and [ethers.js](https://docs.ethers.org/).
 - **Customizable Templates** – Start from scratch or use prebuilt contract templates.
 - **Live Preview** – See the generated Solidity code update in real time.
@@ -33,7 +33,7 @@ Once built, users can **deploy their contracts directly to the blockchain** (tes
 - **Frontend**: React, Wagmi, ethers.js
 - **Smart Contracts**: Solidity
 - **Compiler**: solc-js / Backend Solidity compilation API
-- **Blockchain Networks**: Ethereum (Sepolia testnet), Polygon (Mumbai), other EVM-compatible chains
+- **Blockchain Networks**: Filecoin (FVM)
 - **Deployment**: Browser-based deployment via connected wallet
 
 ---
