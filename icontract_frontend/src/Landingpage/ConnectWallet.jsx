@@ -15,7 +15,7 @@ import { ConnectKitButton } from 'connectkit';
 
 const ConnectWallet = () => {
   const { walletAdd, setWalletAdd, api_endpoint } = useMyContext(); // Call it as a function
-  const [open, setOpen] = useState(null)
+  const [open, setOpen] = useState(true)
   const [name, setName] = useState('')
   const { disconnect } = useDisconnect ();
   const { address, isConnected } = useAccount();
