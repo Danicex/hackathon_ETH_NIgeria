@@ -37,7 +37,7 @@ contract SimpleStorage {
     constructor() {
         message = "Hello Filecoin!";
     }
-
+//your code goes here
     // Update the message
     function setMessage(string memory newMessage) public {
         message = newMessage;
@@ -66,8 +66,9 @@ contract SimpleStorage {
       if (current_project) {
         setActiveProject(true);
         const data = await getContent(current_project);
-        if (data) {
-          setCode();
+        const y = data.text
+        if (y.length > 0 ) {
+        setCode(data);
         }
       }
     };
@@ -75,17 +76,18 @@ contract SimpleStorage {
   }, [current_project]);
 
   // Auto-save functionality
-  useEffect(() => {
-    if (!current_project) return;
+useEffect(() => {
+  if (!current_project || current_project.length === 0) return;
 
-    const autoSave = async () => {
-      await saveContent(current_project, code);
-      // await syncFile();
-    };
+  const autoSave = async () => {
+    await saveContent(current_project, code);
+    await syncFile();
+  };
 
-    const interval = setInterval(autoSave, 30000); // Auto-save every 30 seconds
-    return () => clearInterval(interval);
-  }, [code, current_project]);
+  const interval = setInterval(autoSave, 30000); // every 30s
+
+  return () => clearInterval(interval); // cleanup on dependency change or unmount
+}, [code, current_project]);
 
   // Keyboard shortcut for saving
   useEffect(() => {
@@ -222,7 +224,7 @@ contract SimpleStorage {
     try {
       const { contractAddress, result } = await deployContract(code)
       setDeployedAddress(contractAddress)
-    
+
       console.log("Deployment successful:", result);
     } catch (err) {
       setError(err.message)
@@ -238,7 +240,6 @@ contract SimpleStorage {
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-black text-white">
       {/* Header */}
-      <p>{code}</p>
       <div>
         {deployedAddress && (
           <div>
@@ -257,7 +258,7 @@ contract SimpleStorage {
         </Button>
 
         {isOpen && (
-          <CodeAssistant isOpen={isOpen}  setIsOpen={setIsOpen}/>
+          <CodeAssistant isOpen={isOpen} setIsOpen={setIsOpen} />
         )}
         {error && <p style={{ color: 'red' }}>Error: {error}</p>}
       </div>
