@@ -19,8 +19,8 @@ export function AppDataProvider ({ children }){
     const [userData, setUserData] = useState(localStorage.getItem('user_data') || {})
     
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
-    const api_endpoint = 'http://127.0.0.1:8000'
-    //const api_endpoint = 'https://learnmax-backend.onrender.com/'
+    //const api_endpoint = 'http://127.0.0.1:8000'
+    const api_endpoint = 'https://learnmax-backend.onrender.com/'
     useEffect(() => {
         localStorage.setItem('theme', theme);
         document.body.className = theme;
