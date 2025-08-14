@@ -4,3 +4,4 @@ python-dotenv
 sqlmodel
 openai==0.28
 py-solc-x
+psycopg2-binary 

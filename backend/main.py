@@ -12,6 +12,8 @@ import os
 
 #handle auth with jwt session...
 # ----------------- Models -----------------
+
+
 class Project(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
@@ -35,11 +37,10 @@ class User(SQLModel, table=True):
 
 
 
-# ----------------- Database -----------------
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+# ----------------- Database ----------------
+postgres_url = "postgresql://i_contract_user:p7J4DUrxVdAYiakC9dflQ0egy8MD1zml@dpg-d2es30juibrs738cik0g-a/i_contract"
+
+engine = create_engine(postgres_url, echo=True)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
