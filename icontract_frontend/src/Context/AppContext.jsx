@@ -20,7 +20,7 @@ export function AppDataProvider ({ children }){
     
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
     //const api_endpoint = 'http://127.0.0.1:8000'
-    const api_endpoint = 'https://learnmax-backend.onrender.com/'
+    const api_endpoint = 'https://hackathon-eth-nigeria.onrender.com'
     useEffect(() => {
         localStorage.setItem('theme', theme);
         document.body.className = theme;
