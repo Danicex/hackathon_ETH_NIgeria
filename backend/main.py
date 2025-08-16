@@ -19,7 +19,7 @@ class Project(SQLModel, table=True):
     name: str = Field(index=True)
     content: Optional[str] = Field(default=None)
     description: Optional[str] = Field(default=None)
-    project_hash: Optional[int] = Field(default=None, index=True)
+    project_hash: str = Field(index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     user_id: int = Field(foreign_key="user.id")  # Add this field
@@ -38,7 +38,8 @@ class User(SQLModel, table=True):
 
 
 # ----------------- Database ----------------
-postgres_url = "postgresql://i_contract_user:p7J4DUrxVdAYiakC9dflQ0egy8MD1zml@dpg-d2es30juibrs738cik0g-a/i_contract"
+#postgres_url = "postgresql://i_contract_user:p7J4DUrxVdAYiakC9dflQ0egy8MD1zml@dpg-d2es30juibrs738cik0g-a/i_contract"
+postgres_url = "postgresql://postgres:password007@localhost:5432/i_contract"
 
 engine = create_engine(postgres_url, echo=True)
 
